@@ -1,7 +1,7 @@
+//==============//
+//   Includes   //
+//==============//
 
-//============================
-//          Includes
-//============================
 #include <vector>
 #include <map>
 #include <random>
@@ -13,21 +13,24 @@ using namespace std;
 
 class Model {
 	public:
-	//============================
-	//        Constructors
-	//============================
+	
+	//==================//
+	//   Constructors   //
+	//==================//
+	
 	// Default	
 	Model();
 	//with arg
-	Model(int N, int L, int nbsite, int indPrdm9, int nballele, int parityIndex, double v, double u, double w, double meanaff, double varaff, int nbDSB, int nbGenerations, bool ismigration, bool zygosity, bool withDSB, int everygen, double m, double alpha, double beta, int nbgenmig, bool popsamesize, int nbloop, int nbcore, bool isallele, bool issampling, bool isanalytic, double ctot, bool targetcomp, int quantilenb, int nbmeiperind, double cfreethreshold, bool affinityUniform, string name);
+	Model(int N, int L, int nbsite, int indPrdm9, int nballele, int parityIndex, double v, double u, double w, double meanaff, double varaff, int nbDSB, int nbGenerations, bool ismigration, bool zygosity, bool withDSB, int everygen, double m, double alpha, double beta, int nbgenmig, bool popsamesize, int nbloop, int nbcore, bool isallele, bool issampling, bool isanalytic, double ctot, bool targetcomp, int quantilenb, int nbmeiperind, double cfreethreshold, string name); // Take all the parameters decribed below. The default values are set in main.cpp
 	
-	//============================
-	//        Destructors
-	//============================
+	//=================//
+	//   Destructors   //
+	//=================//
 	
-	//============================
-	//           Getters
-	//============================
+	//=============//
+	//   Getters   //
+	//=============//
+	
 	vector<vector<vector<int>>> populations(); 
 	vector<vector<vector<int>>> populations1();
 	vector<vector<vector<int>>> populations2();
@@ -70,11 +73,7 @@ class Model {
 	map<int,vector<double>> infoperallele1();
 	map<int,vector<double>> infoperallele2();
 	map<int,vector<double>> infoperallele_hom();
-	//map<int,vector<double>> infoperallele1_hom();
-	//map<int,vector<double>> infoperallele2_hom();
 	map<int,vector<double>> infoperallele_het();
-	//map<int,vector<double>> infoperallele1_het();
-	//map<int,vector<double>> infoperallele2_het();
 	double alpha();
 	double beta();
 	int nbgenmig();
@@ -89,13 +88,15 @@ class Model {
 	double ctot();
 	int quantilenb();
 	int nbmeiperind(); 
-	//============================
-	//           Setters
-	//============================
+	
+	//=============//
+	//   Setters   //
+	//=============//
 
-	//============================
-	//           Methods
-	//============================
+	//=============//
+	//   Methods   //
+	//=============//
+	
 	int choose(int n); //choose a nb between 0 and n-1 with a uniform law
 	int bernoulli_draw(double p); //give bernoulli distrib with prob p
 	int binomial_draw(int n, double p); // binomial law
@@ -147,9 +148,11 @@ class Model {
 	vector<double> sigma_q_w_0();//Give the mean q, fertility, sigma and cfree/ctot for a new allele : in parameters file
 	
 	protected:
-	//============================
-	//       Data members
-	//============================
+	
+	//==================//
+	//   Data members   //
+	//==================//
+	
 	vector<vector<vector<int>>> populations_; // marix of the populations current and next: columns => number of chromosomes (2*N), rows => all sites in the genome (L)
 	vector<vector<vector<int>>> populations1_; //first population for the migration
 	vector<vector<vector<int>>> populations2_; //second population for the migration
@@ -194,10 +197,6 @@ class Model {
 	map<int,vector<double>> infoperallele_het_;//store information for each allele in heterozygous state such as the numer of symetrical binding or the nb of failed meiosis per allele
 	map<int,vector<double>> infoperallele1_; // store information for each allele such as the numer of symetrical binding or the nb of failed meiosis per allele for pop 1
 	map<int,vector<double>> infoperallele2_; // store information for each allele such as the numer of symetrical binding or the nb of failed meiosis per allele for pop 2
-	//map<int,vector<double>> infoperallele1_hom_; // totnbfail, 2dsb, nodsb, nosym, q, totnbok
-	//map<int,vector<double>> infoperallele2_hom_; //
-	//map<int,vector<double>> infoperallele1_het_; // totnbfail, 2dsb, nodsb, nosym, q, totnbok
-	//map<int,vector<double>> infoperallele2_het_; //
 	double alpha_; //first param of the beta distribution
 	double beta_; //second param of the beta distribution
 	int nbgenmig_; //nb of the generation at which we want to split de pop for migration (if = 0 => begin directly with 2 pop)
@@ -212,7 +211,6 @@ class Model {
 	double ctot_;//total concentration for 1 PRDM9 allele in heterozygot
 	int quantilenb_;//number of categories for the affinity distribution
 	map<double,vector<double>> nbsitesperquantile_;//[quantile category]{mean of the quantile category, number of active site in each category of quantile}
-	int nbmeiperind_;//number of meiosis that an individual can perform before being caracterizes as steril
+	int nbmeiperind_;//number of meiosis that an individual can perform before being caracterizes as sterile
 	double cfreethreshold_;//threshold for the determination of cfree
-	bool affinityUniform_;//affinity distribution follows a uniform law
 };
