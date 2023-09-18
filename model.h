@@ -13,7 +13,6 @@ using namespace std;
 
 class Model {
 	public:
-	
 	//==================//
 	//   Constructors   //
 	//==================//
@@ -21,7 +20,7 @@ class Model {
 	// Default	
 	Model();
 	//with arg
-	Model(int N, int L, int nbsite, int indPrdm9, int nballele, int parityIndex, double v, double u, double w, double meanaff, double varaff, int nbDSB, int nbGenerations, bool ismigration, bool zygosity, bool withDSB, int everygen, double m, double alpha, double beta, int nbgenmig, bool popsamesize, int nbloop, int nbcore, bool isallele, bool issampling, bool isanalytic, double ctot, bool targetcomp, int quantilenb, int nbmeiperind, double cfreethreshold, string name); // Take all the parameters decribed below. The default values are set in main.cpp
+	Model(int N, int L, int nbsite, int indPrdm9, int nballele, int parityIndex, double v, double u, double w, double meanaff, double varaff, int nbDSB, int nbGenerations, bool ismigration, bool zygosity, bool withDSB, int everygen, double m, double alpha, double beta, int nbgenmig, bool popsamesize, int nbhyb, int nbcore, bool isallele, bool issampling, bool isanalytic, double ctot, bool targetcomp, int quantilenb, int nbmeiperind, double cfreethreshold, double dosagecoeff, bool COasym, string name);
 	
 	//=================//
 	//   Destructors   //
@@ -63,6 +62,9 @@ class Model {
 	double q();
 	double q1();
 	double q2();
+	double qsym();
+	double qsym1();
+	double qsym2();
 	bool withDSB();
 	double w();
 	string name();
@@ -73,21 +75,31 @@ class Model {
 	map<int,vector<double>> infoperallele1();
 	map<int,vector<double>> infoperallele2();
 	map<int,vector<double>> infoperallele_hom();
+	map<int,vector<double>> infoperallele1_hom();//////////////////
+	map<int,vector<double>> infoperallele2_hom();//////////////////
 	map<int,vector<double>> infoperallele_het();
+	map<int,vector<double>> infoperallele1_het();//////////////////
+	map<int,vector<double>> infoperallele2_het();//////////////////
 	double alpha();
 	double beta();
 	int nbgenmig();
 	bool popsamesize();
-	int nbloop();
+	int nbhyb();
 	int nbcore();
 	bool isallele();
 	bool issampling();
 	bool isanalytic();
 	double qnum();
 	double qdenom();
+	double qnum1();
+	double qnum2();
+	double qdenom1();
+	double qdenom2();
 	double ctot();
 	int quantilenb();
 	int nbmeiperind(); 
+	double dosagecoeff();
+	bool COasym();
 	
 	//=============//
 	//   Setters   //
@@ -105,14 +117,14 @@ class Model {
 	vector<int> vectfreesites(vector<int> vect, int nb); //return the index, in the vector vect, of all positions equal to nb
 	vector<vector<int>> occupiedsites(vector<int> vect, vector<vector<int>>* genotype); //return the index of all occupied positions
 	void sitemutation(vector<vector<vector<int>>>* population, vector<vector<int>>* genotype); // for each position with allele, probability v to mutate and if mutation, choose randomly 1 chrom to mutate
-	void allelemutation(vector<vector<vector<int>>>* population, vector<vector<int>>* genotype, map<int,double>* Ageallele, vector<int>vectnbind); // for each chromosome, mutation of allele with probability u
+	void allelemutation(vector<vector<vector<int>>>* population, vector<vector<int>>* genotype, map<int,double>* Ageallele, vector<int>vectnbind, double num_pop); // for each chromosome, mutation of allele with probability u
 	void updatemissingallele(); //update the map if one allele has gone extinct : allele suppressed in map, all positions of this allele are set to -1 (free position) and all the activations are set to one
 	void printpop(int n, vector<vector<vector<int>>> population); //print popuation
 	void printgen(int n, vector<vector<int>> genotype); //print genotype vector
 	void printposallele(); //print site positions for each allele
 	void printallelepos(); //print Allele for each position
 	void printaffinity(); //print Affinity
-	int Meiosis(int no_chrom_ind, int nb_gen, vector<vector<vector<int>>>* population, vector<vector<int>>* genotype, map<int,vector<double>>* infoperallele,map<int,vector<double>>* infoperallele_hom, map<int,vector<double>>* infoperallele_het, vector<vector<int>>* nbfailedmeiosis, double* q, double* qsym, double* qnum, double* qdenom, int indiv/*, int nb_meiosis*/); //Perform the meiosis of one individual and return 0 if the meiosis fails somewhere or 1 if the meiosis is successfull
+	int Meiosis(int no_chrom_ind, int nb_gen, vector<vector<vector<int>>>* population, vector<vector<int>>* genotype, map<int,vector<double>>* infoperallele,map<int,vector<double>>* infoperallele_hom, map<int,vector<double>>* infoperallele_het, vector<vector<int>>* nbfailedmeiosis, double* q, double* qsym, double* qnum, double* qdenom, int indiv, int nb_meiosis); //Perform the meiosis of one individual and return 0 if the meiosis fails somewhere or 1 if the meiosis is successfull
 	void fillnewpop(int nb_gen, vector<vector<vector<int>>>* population, vector<vector<int>>* genotype, map<int,vector<double>>* infoperallele, map<int,vector<double>>* infoperallele_hom, map<int,vector<double>>* infoperallele_het, vector<vector<int>>* nbfailedmeiosis, double* q, double* qsym, double* qnum, double* qdenom); //methode that fill new population (make as many meiosis as it is necessary to fill the entire new population)
 	void manygenerations(); //methode which mix together and runs all the previous functions during X generations 
 	vector<int> get_allele_number(vector<vector<vector<int>>*> vectgen, bool nbtot); //get number of different alleles in the population
@@ -134,7 +146,7 @@ class Model {
 	double get_q(vector<vector<vector<int>>>* population, vector<vector<int>>* genotype);//give q indepedently from the system (sampling) for the next generation
 	double get_q_hybrid(vector<vector<vector<vector<int>>>*> vectpop, vector<vector<vector<int>>*> vectgen);//give q of hybride
 	vector<int> get_one_gamete(vector<int> genotype_indiv, vector<vector<int>> indiv_chrom);//give one gamete of an individual
-	vector<double> get_q_fertility_indep(vector<vector<vector<vector<int>>>*> vectpop, vector<vector<vector<int>>*> vectgen, int nbloop_, int nopop);//give the mean probability of symetrical site and the mean of fertility in the population
+	vector<double> get_q_fertility_indep(vector<vector<vector<vector<int>>>*> vectpop, vector<vector<vector<int>>*> vectgen, int hyb_, int nopop);//give the mean probability of symetrical site and the mean of fertility in the population
 	double get_FST_neutral(vector<vector<vector<vector<int>>>*> vectpop);//give the FST of neutral site
 	double get_FST_PRDM9(vector<vector<vector<int>>*> vectgen);//give the PRDM9 FST
 	double get_mean_age(vector<vector<int>>* genotype, map<int,double>* Ageallele);//get the mean age of the alleles segregating in the population
@@ -146,6 +158,10 @@ class Model {
 	vector<map<int,vector<double>>> q_fert_individual_analytique(vector<vector<int>>* genotype, vector<vector<vector<int>>>* pop, map<int,vector<double>>* infoperallele_hom, map<int,vector<double>>* infoperallele_het);//Give the mean q, fertility and sigma for each allele present in the population
 	double Mean_fert_new_allele(vector<vector<int>>* genotype, vector<vector<vector<int>>>* pop, map<int,vector<double>>* infoperallele_het);//Give the mean fertility of a new allele in all possible heterozygot context in the population
 	vector<double> sigma_q_w_0();//Give the mean q, fertility, sigma and cfree/ctot for a new allele : in parameters file
+	double if_allele_print_else_nan(map<int,vector<double>> map_allele, int allele_nb, int third_int);
+	vector<map<int,vector<double>>> q_fert_hybrid_analytic_general(vector<vector<vector<vector<int>>>*> vectpop, vector<vector<vector<int>>*> vectgen, vector<map<int,vector<double>>*> vectinfo_hom, vector<map<int,vector<double>>*> vectinfo_het); //
+	void get_q_fert_hybrid_analytic(vector<vector<vector<vector<int>>>*> vectpop, vector<vector<vector<int>>*> vectgen, vector<map<int,vector<double>>*> vectinfo_hom, vector<map<int,vector<double>>*> vectinfo_het, map<int,vector<double>>* res_q, map<int,vector<double>>* res_fert, map<int,vector<double>>* res_number_meiosis); //
+	void q_fert_two_hap_analytic(vector<int> genotype_indiv, vector<vector<int>> indiv_chrom, vector<map<int,vector<double>>*> vectinfo_hom, vector<map<int,vector<double>>*> vectinfo_het, map<int,vector<double>>* res_q, map<int,vector<double>>* res_fert, map<int,vector<double>>* res_number_meiosis); //
 	
 	protected:
 	
@@ -183,9 +199,11 @@ class Model {
 	int everygen_; //nb of generation at which we want to print the results in the files
 	bool ismigration_; //is there migration
 	double q_; //probability of symmetrical binding + DSB
-	double qsym_;//
 	double q1_;//probability of symmetrical binding + DSB for pop 1
 	double q2_;//probability of symmetrical binding + DSB for pop 2
+	double qsym_;//
+	double qsym1_;//
+	double qsym2_;//
 	bool withDSB_; //do we take into account the 2 DSB at one site as a cause of failed meiosis
 	double w_; //neutral site mutation rate
 	string name_; //name of the files
@@ -197,20 +215,30 @@ class Model {
 	map<int,vector<double>> infoperallele_het_;//store information for each allele in heterozygous state such as the numer of symetrical binding or the nb of failed meiosis per allele
 	map<int,vector<double>> infoperallele1_; // store information for each allele such as the numer of symetrical binding or the nb of failed meiosis per allele for pop 1
 	map<int,vector<double>> infoperallele2_; // store information for each allele such as the numer of symetrical binding or the nb of failed meiosis per allele for pop 2
+	map<int,vector<double>> infoperallele1_hom_; //
+	map<int,vector<double>> infoperallele2_hom_; //
+	map<int,vector<double>> infoperallele1_het_; //
+	map<int,vector<double>> infoperallele2_het_; //
 	double alpha_; //first param of the beta distribution
 	double beta_; //second param of the beta distribution
 	int nbgenmig_; //nb of the generation at which we want to split de pop for migration (if = 0 => begin directly with 2 pop)
 	bool popsamesize_; //two pop for migration has the same size of the initial pop or devided by two
-	int nbloop_; //nb loop for indep q and fertility
+	int nbhyb_; //nb loop for indep q and fertility
 	int nbcore_;//nb core for open mp
 	bool isallele_;//do we want the result for each allele
 	bool issampling_;//do we want the result from the sampling
 	bool isanalytic_;//do we want the analytical results
 	double qdenom_; //denominator of q
+	double qdenom1_; //denominator of q
+	double qdenom2_; //denominator of q
 	double qnum_; //numerator of q
+	double qnum1_; //numerator of q
+	double qnum2_; //numerator of q
 	double ctot_;//total concentration for 1 PRDM9 allele in heterozygot
 	int quantilenb_;//number of categories for the affinity distribution
 	map<double,vector<double>> nbsitesperquantile_;//[quantile category]{mean of the quantile category, number of active site in each category of quantile}
-	int nbmeiperind_;//number of meiosis that an individual can perform before being caracterizes as sterile
+	int nbmeiperind_;//number of meiosis that an individual can perform before being caracterizes as steril
 	double cfreethreshold_;//threshold for the determination of cfree
+	double dosagecoeff_;
+	bool COasym_; //if =1, the crossing over can be done at symmetrically and asymmetrically bound sites
 };
